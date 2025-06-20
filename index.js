@@ -1,8 +1,10 @@
 import express from 'express'
 import rootRouter from './src/routes/index.js';
+import cors from 'cors'; 
 
 const port = process.env.PORT ? Number(process.env.PORT) : 3333;
 const app = express() // constante para chamar o express, tudo vai aqui agora
+app.use(cors())
 app.use(express.json())
 app.use(rootRouter)
 
