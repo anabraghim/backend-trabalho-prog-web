@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// representações das tabelas no banco de dados, com isso nosso prisma cria as tabelas no BD e o node consegue gerar código para manipularmos o BD
+
+enum Rating{
+  one
+  two
+  three
+  four
+  five
+}
+
+model User { //aqui é tipo um CREATE TABLE User
+  id Int @id @default(autoincrement())
+  name String
+  username String @unique
+  email String @unique
+  password String
+
+  // objeto para acessar facil todas as criticas que o usuário fez
+  reviews Review[]
+  comments Comment[]
+  reviewRatings ReviewRating[]
+}
+
+model Movie{
+  id Int @id @default(autoincrement())
+  title String @unique
+  // category String
+  director String
+  image_url String
+  release_year Int
+  tmdb_id Int @unique
+
+  
+
+  // obj para acessar facil todas as criticas relacionadas a esse filme
+  reviews Review[]
+  //obj para acessar fácil os generos desse filme
+  genres Genre[] @relation("MovieGenres")
+}
+
+model Genre{
+  id Int @id @default(autoincrement())
+  name String @unique
+
+  // relacao n pra n com movie
+  movies Movie[] @relation("MovieGenres")
+}
+
+model Review{
+  id Int @id @default(autoincrement())
+  rating Rating
+  title String
+  text String
+  created_at DateTime @default(now()) // o now() faz já pegarmos a data e hora de quando a nova crítica é gerada no BD
+
+  //chaves estrangeiras
+  user_id Int
+  movie_id Int
+
+  user User @relation(fields: [user_id], references: [id])
+  movie Movie @relation(fields: [movie_id], references: [id])
+  // estrutura: nome_objeto_para_acessar_depois modelo_dele @relation(fields: [nome_da_fk], references: [campo_que_ela_referencia])
+  comments Comment[]
+  reviewRatings ReviewRating[]
+
+  @@index([user_id])
+  @@index([movie_id])
+  @@index([created_at])
+  @@index([title])
+}
+
+model ReviewRating{
+  id Int @id @default(autoincrement())
+  value Boolean // se for true é like se for false é deslike
+  
+  user_id Int 
+  review_id Int
+
+  user User @relation(fields: [user_id], references: [id])
+  review Review @relation(fields: [review_id], references: [id])
+
+  @@unique([user_id, review_id]) // um único voto por crítica por usuário
+  @@index([review_id])
+  @@index([user_id])
+}
+
+
+model Comment {
+  id Int @id @default(autoincrement())
+  text String
+  created_at DateTime @default(now())
+
+  user_id Int
+  review_id Int
+
+  user User @relation(fields: [user_id], references: [id])
+  review Review @relation(fields: [review_id], references: [id])
+
+  @@index([review_id])
+  @@index([user_id])
+}
