@@ -1,6 +1,17 @@
 import { prisma } from "../db.js";
 
-export const getAllReviews = async () => prisma.review.findMany()
+export const getAllReviews = async () => {
+    return await prisma.review.findMany({
+    include: {
+        movie: {
+        select: {
+            title: true,
+            image_url: true
+        }
+        }
+    }
+    });
+}
 
 export const getReviewById = async (id) => {
   return await prisma.review.findUnique({
@@ -43,19 +54,16 @@ export const searchReviews = async (query) => {
     return await prisma.review.findMany({
     where: {
         OR: [
-        {
-            title: {
-            contains: query,
-            mode: 'insensitive'
-            }
-        },
-        {
-            text: {
-            contains: query,
-            mode: 'insensitive'
-            }
-        }
+        { title: { contains: query, mode: 'insensitive' } },
+        { text: { contains: query, mode: 'insensitive' } }
         ]
+    },
+    include: {
+        movie: {
+        select: {
+            title: true
+        }
+        }
     }
     })
 }
