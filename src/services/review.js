@@ -8,6 +8,11 @@ export const getAllReviews = async () => {
             title: true,
             image_url: true
         }
+        },
+        user: {
+            select: {
+                username: true
+            }
         }
     }
     });
@@ -25,7 +30,7 @@ export const getReviewById = async (id) => {
         orderBy: { created_at: 'desc' },
         include: {
             user: {
-            select: { id: true, name: true, email: true }
+            select: { username: true }
             }
         }
         }
