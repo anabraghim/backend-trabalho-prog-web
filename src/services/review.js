@@ -55,7 +55,8 @@ export const searchReviews = async (query) => {
     where: {
         OR: [
         { title: { contains: query, mode: 'insensitive' } },
-        { text: { contains: query, mode: 'insensitive' } }
+        { text: { contains: query, mode: 'insensitive' } }, 
+        { movie: { title: { contains: query, mode: 'insensitive' } } }
         ]
     },
     include: {
