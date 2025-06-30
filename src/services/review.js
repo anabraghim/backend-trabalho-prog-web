@@ -28,7 +28,7 @@ export const getReviewById = async (id) => {
         movie: true,
         comments: {
             select: {
-                id,
+                id: true,
                 text: true,
                 user: {
                     select: {
