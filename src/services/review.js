@@ -23,11 +23,18 @@ export const getReviewById = async (id) => {
     where: { id },
     include: {
         user: {
-        select: { username: true }
+            select: { username: true }
         },
         movie: true,
         comments: {
-        orderBy: { created_at: 'desc' }
+            select: {
+                user: {
+                    select: {
+                        username: true
+                    }
+                }
+            },
+            orderBy: { created_at: 'desc' },
         }
     }
     });
